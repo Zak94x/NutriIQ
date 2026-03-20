@@ -36,16 +36,13 @@ html, body { height:100%; overscroll-behavior:none; }
 body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; overflow:hidden; padding-top:var(--st); }
 
 /* ── SPLASH ── */
-#splash { position:fixed; inset:0; background:var(--dark); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; z-index:9999; transition:opacity .6s ease, transform .6s ease; }
-#splash.hide { opacity:0; transform:scale(1.04); pointer-events:none; }
-.sp-leaf { font-size:64px; animation:leafIn .8s cubic-bezier(.34,1.56,.64,1) both; }
-@keyframes leafIn { from{transform:scale(.3) rotate(-20deg);opacity:0;} to{transform:scale(1) rotate(0deg);opacity:1;} }
-.sp-title { font-family:'Playfair Display',serif; font-size:42px; font-weight:400; letter-spacing:4px; color:#e8f0e8; animation:fadeUp .6s .3s both; }
-.sp-sub { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:3px; color:var(--sage); text-transform:uppercase; animation:fadeUp .6s .45s both; }
-.sp-bar { width:100px; height:1px; background:rgba(255,255,255,0.1); border-radius:1px; overflow:hidden; animation:fadeUp .4s .6s both; }
-.sp-fill { height:100%; background:linear-gradient(90deg,var(--sage),#a8d4a8); animation:spLoad 1.6s .7s ease forwards; width:0%; }
-@keyframes spLoad { to{width:100%;} }
-@keyframes fadeUp { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+#splash { position:fixed; inset:0; background:var(--dark); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; z-index:9999; }
+#splash.hide { display:none; }
+.sp-leaf { font-size:64px; }
+.sp-title { font-family:'Playfair Display',serif; font-size:42px; font-weight:400; letter-spacing:4px; color:#e8f0e8; }
+.sp-sub { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:3px; color:var(--sage); text-transform:uppercase; }
+.sp-bar { width:100px; height:1px; background:rgba(255,255,255,0.1); border-radius:1px; overflow:hidden; }
+.sp-fill { height:100%; background:linear-gradient(90deg,var(--sage),#a8d4a8); width:100%; }
 
 /* ── APP ── */
 #app { display:flex; flex-direction:column; height:100%; opacity:0; transition:opacity .5s .1s; }
@@ -563,16 +560,15 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 </div>
 
 <script>
-// ── SPLASH — force hide after 2s no matter what ──
+// ── SPLASH — force hide after 1.5s no matter what ──
 function hideSplash(){
   const s=document.getElementById('splash');
   const a=document.getElementById('app');
   if(s) s.classList.add('hide');
   if(a) a.classList.add('show');
-  setTimeout(()=>{ if(s&&s.parentNode) s.remove(); },700);
 }
-setTimeout(hideSplash, 2000);
-window.addEventListener('load', ()=>setTimeout(hideSplash,500));
+setTimeout(hideSplash, 1500);
+document.addEventListener('DOMContentLoaded', ()=>setTimeout(hideSplash,500));
 
 // ── SAFE STORAGE ──
 function safeGet(key){ try{ return JSON.parse(localStorage.getItem(key)||'{}'); }catch(e){ return {}; } }
