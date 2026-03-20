@@ -563,18 +563,30 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 </div>
 
 <script>
-// ── SPLASH ──
-setTimeout(()=>{
-  document.getElementById('splash').classList.add('hide');
-  document.getElementById('app').classList.add('show');
-  setTimeout(()=>document.getElementById('splash').remove(),700);
-},2000);
+// ── SPLASH — force hide after 2s no matter what ──
+function hideSplash(){
+  const s=document.getElementById('splash');
+  const a=document.getElementById('app');
+  if(s) s.classList.add('hide');
+  if(a) a.classList.add('show');
+  setTimeout(()=>{ if(s&&s.parentNode) s.remove(); },700);
+}
+setTimeout(hideSplash, 2000);
+window.addEventListener('load', ()=>setTimeout(hideSplash,500));
+
+// ── SAFE STORAGE ──
+function safeGet(key){ try{ return JSON.parse(localStorage.getItem(key)||'{}'); }catch(e){ return {}; } }
+function safeSet(key,val){ try{ localStorage.setItem(key,JSON.stringify(val)); }catch(e){} }
 
 // ── DATE ──
-const now = new Date();
-const dateStr = now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
-document.getElementById('headerDate').innerHTML = dateStr.split(' ').slice(0,1)[0].toUpperCase()+'<br>'+now.getDate()+' '+now.toLocaleDateString('fr-FR',{month:'short'}).toUpperCase();
-document.getElementById('journalDate').textContent = dateStr.charAt(0).toUpperCase()+dateStr.slice(1);
+try{
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  const hd = document.getElementById('headerDate');
+  const jd = document.getElementById('journalDate');
+  if(hd) hd.innerHTML = dateStr.split(' ').slice(0,1)[0].toUpperCase()+'<br>'+now.getDate()+' '+now.toLocaleDateString('fr-FR',{month:'short'}).toUpperCase();
+  if(jd) jd.textContent = dateStr.charAt(0).toUpperCase()+dateStr.slice(1);
+}catch(e){}
 
 // ── TABS ──
 function showTab(tab, btn){
@@ -588,7 +600,7 @@ function showTab(tab, btn){
 let selectedMeal = 'Petit-déjeuner';
 let currentImageB64 = null;
 let journal = [];
-let profil = JSON.parse(localStorage.getItem('nutriiq_profil')||'{}');
+let profil = safeGet('nutriiq_profil');
 let scores = [];
 
 // Load profil
@@ -651,7 +663,7 @@ function saveProfil(e){
     regime: document.getElementById('pRegime').value,
     allergies: document.getElementById('pAllergies').value
   };
-  localStorage.setItem('nutriiq_profil', JSON.stringify(profil));
+  safeSet('nutriiq_profil', profil);
   const s = document.getElementById('profilSaved');
   s.style.display = 'block';
   setTimeout(()=>s.style.display='none',3000);
